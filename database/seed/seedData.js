@@ -1,5 +1,3 @@
-const bcrypt = require('bcryptjs');
-
 async function getSeedData() {
   // Real authentication only: Zero dummy users or fake profiles
   const users = [];
