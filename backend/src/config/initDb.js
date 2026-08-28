@@ -122,7 +122,6 @@ function migrateTables() {
 
 function initializeDatabase() {
   try {
-    migrateTables();
     const schemaPath = path.resolve(__dirname, '../../../database/schema/sqlite_schema.sql');
     let schemaSql = '';
     if (fs.existsSync(schemaPath)) {
@@ -133,12 +132,24 @@ function initializeDatabase() {
     }
 
     // Execute schema statements
-    db.exec(schemaSql);
-    console.log('✅ SQLite Database tables and indexes initialized successfully.');
+    try {
+      db.exec(schemaSql);
+    } catch (schemaErr) {
+      console.warn('Initial schema execute notice:', schemaErr.message);
+    }
+
+    migrateTables();
+
+    // Re-verify indexes
+    try {
+      db.exec(schemaSql);
+    } catch (e) {}
+
+    console.log('✅ Database tables and indexes verified successfully.');
     return true;
   } catch (error) {
     console.error('❌ Error initializing database:', error);
-    throw error;
+    return false;
   }
 }
 

@@ -101,9 +101,12 @@ CREATE TABLE IF NOT EXISTS topics (
 CREATE TABLE IF NOT EXISTS user_syllabus_progress (
   id TEXT PRIMARY KEY,
   user_id TEXT NOT NULL,
+  exam_id TEXT,
   topic_id TEXT NOT NULL,
   status TEXT DEFAULT 'pending', -- 'pending' | 'in_progress' | 'completed' | 'revised'
   mastery_percentage REAL DEFAULT 0.0,
+  completion_percentage REAL DEFAULT 0.0,
+  notes_bookmarked INTEGER DEFAULT 0,
   hours_spent REAL DEFAULT 0.0,
   last_studied_at DATETIME,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
