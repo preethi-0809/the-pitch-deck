@@ -4,7 +4,7 @@
   "description": "AI-Powered Government Exam Preparation Platform (UPSC, SSC, TNPSC, Banking, Railway, State PSC)",
   "main": "backend/src/server.js",
   "scripts": {
-    "build": "npm run build --prefix frontend",
+    "build": "npm install --prefix backend && npm install --prefix frontend && npm run build --prefix frontend",
     "start": "node backend/src/server.js",
     "app": "npm run build && node backend/src/server.js",
     "server": "node backend/src/server.js",
