@@ -1,0 +1,35 @@
+{
+  "name": "government-exam-ai",
+  "version": "1.0.0",
+  "description": "AI-Powered Government Exam Preparation Platform (UPSC, SSC, TNPSC, Banking, Railway, State PSC)",
+  "main": "backend/src/server.js",
+  "scripts": {
+    "build": "npm run build --prefix frontend",
+    "start": "node backend/src/server.js",
+    "app": "npm run build && node backend/src/server.js",
+    "server": "node backend/src/server.js",
+    "client": "npm run dev --prefix frontend",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "seed": "node database/seed/seedRunner.js",
+    "turso:migrate": "node scripts/migrateToTurso.js",
+    "turso:export": "node scripts/exportToTurso.js",
+    "install-all": "npm install && npm install --prefix backend && npm install --prefix frontend"
+  },
+  "keywords": [
+    "upsc",
+    "ssc",
+    "tnpsc",
+    "banking",
+    "railway",
+    "ai-coach",
+    "exam-preparation",
+    "adaptive-learning"
+  ],
+  "author": "Antigravity AI",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "concurrently": "^9.1.2",
+    "dotenv": "^17.4.2"
+  }
+}
