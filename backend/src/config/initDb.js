@@ -132,18 +132,22 @@ function initializeDatabase() {
     }
 
     // Execute schema statements
-    try {
-      db.exec(schemaSql);
-    } catch (schemaErr) {
-      console.warn('Initial schema execute notice:', schemaErr.message);
+    if (schemaSql) {
+      try {
+        db.exec(schemaSql);
+      } catch (schemaErr) {
+        console.warn('Initial schema execute notice:', schemaErr.message);
+      }
     }
 
     migrateTables();
 
     // Re-verify indexes
-    try {
-      db.exec(schemaSql);
-    } catch (e) {}
+    if (schemaSql) {
+      try {
+        db.exec(schemaSql);
+      } catch (e) {}
+    }
 
     console.log('✅ Database tables and indexes verified successfully.');
     return true;

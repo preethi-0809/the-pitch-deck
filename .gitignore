@@ -11,8 +11,10 @@ node_modules/
 # Database
 *.sqlite
 *.sqlite-journal
+*.sqlite-shm
+*.sqlite-wal
 *.db
-backend/data/*.sqlite
+backend/data/*.sqlite*
 
 # Logs
 logs

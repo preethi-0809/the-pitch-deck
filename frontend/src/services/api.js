@@ -1,4 +1,13 @@
-const API_BASE = '/api';
+const getApiBase = () => {
+  const envUrl = import.meta.env.VITE_API_URL;
+  if (!envUrl || envUrl.trim() === '') {
+    return '/api';
+  }
+  const clean = envUrl.trim().replace(/\/+$/, '');
+  return clean.endsWith('/api') ? clean : `${clean}/api`;
+};
+
+export const API_BASE = getApiBase();
 
 async function request(endpoint, options = {}) {
   const token = localStorage.getItem('pitchdeck_token') || localStorage.getItem('prepai_token');

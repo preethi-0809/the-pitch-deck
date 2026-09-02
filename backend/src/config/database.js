@@ -11,10 +11,15 @@ dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 const TURSO_DATABASE_URL = process.env.TURSO_DATABASE_URL || 'libsql://pitchdeck-preethi-0809.aws-ap-south-1.turso.io';
 const TURSO_AUTH_TOKEN = process.env.TURSO_AUTH_TOKEN || '';
 
-const DB_FILE = path.resolve(__dirname, '../../data/pitch_deck.sqlite');
+const isServerless = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+const DB_FILE = process.env.SQLITE_DB_PATH || (isServerless ? path.join('/tmp', 'pitch_deck.sqlite') : path.resolve(__dirname, '../../data/pitch_deck.sqlite'));
 const dbDir = path.dirname(DB_FILE);
-if (!fs.existsSync(dbDir)) {
-  fs.mkdirSync(dbDir, { recursive: true });
+try {
+  if (!fs.existsSync(dbDir)) {
+    fs.mkdirSync(dbDir, { recursive: true });
+  }
+} catch (e) {
+  // Gracefully handle read-only environments
 }
 
 let sqliteInstance = null;

@@ -1,0 +1,42 @@
+services:
+  - type: web
+    name: pitch-deck-platform
+    runtime: node
+    plan: free
+    buildCommand: npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: DB_TYPE
+        value: turso
+      - key: TURSO_DATABASE_URL
+        sync: false
+      - key: TURSO_AUTH_TOKEN
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: AI_PROVIDER
+        value: mock
+      - key: AI_API_KEY
+        sync: false
+      - key: AI_MODEL
+        value: gemini-1.5-flash
+      - key: EMAIL_PROVIDER
+        value: smtp
+      - key: EMAIL_HOST
+        value: smtp.gmail.com
+      - key: EMAIL_PORT
+        value: 587
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASS
+        sync: false
+      - key: EMAIL_FROM
+        value: '"Pitch Deck Government Exam Intelligence" <preethika0809@gmail.com>'
+      - key: ADMIN_NOTIFICATION_EMAIL
+        sync: false
