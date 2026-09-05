@@ -30,8 +30,35 @@ async function request(endpoint, options = {}) {
     config.body = JSON.stringify(config.body);
   }
 
-  const response = await fetch(`${API_BASE}${endpoint}`, config);
-  const data = await response.json().catch(() => ({ success: false, message: 'Server returned an invalid response' }));
+  let response;
+  try {
+    response = await fetch(`${API_BASE}${endpoint}`, config);
+  } catch (networkErr) {
+    const isLocal = API_BASE.includes('localhost') || API_BASE.includes('127.0.0.1');
+    const msg = isLocal
+      ? 'Cannot connect to local backend server (http://localhost:5000). Please start it with: npm run server (or npm run dev)'
+      : 'Network error: Unable to reach backend server. Please check your internet connection.';
+    const error = new Error(msg);
+    error.status = 0;
+    throw error;
+  }
+
+  let data;
+  const contentType = response.headers.get('content-type') || '';
+  if (contentType.includes('application/json')) {
+    data = await response.json().catch(() => null);
+  }
+
+  if (!data) {
+    const rawText = await response.text().catch(() => '');
+    if (response.status === 404) {
+      data = { success: false, message: 'Backend endpoint not found (HTTP 404). Please ensure the backend is deployed and reachable.' };
+    } else if (response.status >= 500) {
+      data = { success: false, message: `Server error (HTTP ${response.status}). The service might be starting up or temporarily offline.` };
+    } else {
+      data = { success: false, message: rawText ? `Server returned: ${rawText.slice(0, 120)}` : 'Server returned an invalid response' };
+    }
+  }
 
   if (!response.ok) {
     if (response.status === 401) {
@@ -44,7 +71,7 @@ async function request(endpoint, options = {}) {
         window.dispatchEvent(new Event('auth:unauthorized'));
       }
     }
-    const error = new Error(data.message || 'An error occurred during the API request');
+    const error = new Error(data?.message || `API request failed with status ${response.status}`);
     error.status = response.status;
     error.data = data;
     throw error;
