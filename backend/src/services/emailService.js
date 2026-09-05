@@ -9,6 +9,7 @@ const EMAIL_PORT = parseInt(process.env.EMAIL_PORT || '587');
 const EMAIL_USER = process.env.EMAIL_USER;
 const EMAIL_PASS = process.env.EMAIL_PASS;
 const EMAIL_API_KEY = process.env.EMAIL_API_KEY;
+const APP_BASE_URL = (process.env.CLIENT_URL || 'https://the-pitch-deck.vercel.app').replace(/\/+$/, '');
 
 let cachedTransporter = null;
 let lastPass = null;
@@ -225,7 +226,7 @@ const emailService = {
           ctaText: 'அதிகாரப்பூர்வமாக விண்ணப்பிக்க',
           ctaUrl: officialUrl,
           secondaryCtaText: 'பாடத்திட்டத்தை பார்க்க',
-          secondaryCtaUrl: `http://localhost:5000/syllabus`,
+          secondaryCtaUrl: `${APP_BASE_URL}/syllabus`,
           language: 'ta'
         })
       };
@@ -253,7 +254,7 @@ const emailService = {
           ctaText: 'आधिकारिक पोर्टल पर आवेदन करें',
           ctaUrl: officialUrl,
           secondaryCtaText: 'पाठ्यक्रम देखें',
-          secondaryCtaUrl: `http://localhost:5000/syllabus`,
+          secondaryCtaUrl: `${APP_BASE_URL}/syllabus`,
           language: 'hi'
         })
       };
@@ -281,7 +282,7 @@ const emailService = {
         ctaText: 'Apply Officially',
         ctaUrl: officialUrl,
         secondaryCtaText: 'View Syllabus & Notes',
-        secondaryCtaUrl: `http://localhost:5000/syllabus`,
+        secondaryCtaUrl: `${APP_BASE_URL}/syllabus`,
         language: 'en'
       })
     };
@@ -369,7 +370,7 @@ const emailService = {
         ctaText: 'Apply Now Before Deadline',
         ctaUrl: officialUrl,
         secondaryCtaText: 'View Exam Details',
-        secondaryCtaUrl: `http://localhost:5000/discovery/exams`,
+        secondaryCtaUrl: `${APP_BASE_URL}/discovery/exams`,
         language: 'en'
       })
     };
@@ -453,7 +454,7 @@ const emailService = {
         ctaText: 'Download Hall Ticket Officially',
         ctaUrl: officialUrl,
         secondaryCtaText: 'Quick Revision Notes',
-        secondaryCtaUrl: `http://localhost:5000/syllabus`,
+        secondaryCtaUrl: `${APP_BASE_URL}/syllabus`,
         language: 'en'
       })
     };
@@ -491,7 +492,7 @@ const emailService = {
           badge: isToday ? '🎯 தேர்வு நாள்' : `📅 ${daysRemaining} நாட்கள்`,
           content,
           ctaText: 'தேர்வுக் குறிப்புகளைப் பார்க்க',
-          ctaUrl: 'http://localhost:5000/syllabus',
+          ctaUrl: `${APP_BASE_URL}/syllabus`,
           language: 'ta'
         })
       };
@@ -519,7 +520,7 @@ const emailService = {
           badge: isToday ? '🎯 परीक्षा दिवस' : `📅 ${daysRemaining} दिन शेष`,
           content,
           ctaText: 'रिवीजन नोट्स देखें',
-          ctaUrl: 'http://localhost:5000/syllabus',
+          ctaUrl: `${APP_BASE_URL}/syllabus`,
           language: 'hi'
         })
       };
@@ -548,7 +549,7 @@ const emailService = {
         badge: isToday ? '🎯 Exam Day' : `📅 ${daysRemaining} Days Countdown`,
         content,
         ctaText: 'Access Rapid Revision Studio',
-        ctaUrl: 'http://localhost:5000/syllabus',
+        ctaUrl: `${APP_BASE_URL}/syllabus`,
         secondaryCtaText: 'Official Portal',
         secondaryCtaUrl: officialUrl,
         language: 'en'
@@ -667,7 +668,7 @@ const emailService = {
         badge: '⚡ Verified RAG Digest',
         content,
         ctaText: 'Open Full Current Affairs Studio',
-        ctaUrl: 'http://localhost:5000/current-affairs',
+        ctaUrl: `${APP_BASE_URL}/current-affairs`,
         language: 'en'
       })
     };
@@ -707,9 +708,9 @@ const emailService = {
         badge: '🎉 Candidate Account Active',
         content,
         ctaText: 'Launch Candidate Dashboard',
-        ctaUrl: 'http://localhost:5000/dashboard',
+        ctaUrl: `${APP_BASE_URL}/dashboard`,
         secondaryCtaText: 'View Today\'s Study Plan',
-        secondaryCtaUrl: 'http://localhost:5000/study-plan',
+        secondaryCtaUrl: `${APP_BASE_URL}/study-plan`,
         language: 'en'
       })
     };
@@ -742,9 +743,9 @@ const emailService = {
         badge: '🔐 Sign-In Confirmed',
         content,
         ctaText: 'Continue Today\'s Preparation',
-        ctaUrl: 'http://localhost:5000/dashboard',
+        ctaUrl: `${APP_BASE_URL}/dashboard`,
         secondaryCtaText: 'Review Practice Questions',
-        secondaryCtaUrl: 'http://localhost:5000/tests',
+        secondaryCtaUrl: `${APP_BASE_URL}/tests`,
         language: 'en'
       })
     };
@@ -779,9 +780,9 @@ const emailService = {
         badge: '📢 Official Exam News',
         content,
         ctaText: 'View Official Notice',
-        ctaUrl: newsUrl || exam?.official_url || 'http://localhost:5000/discovery/exams',
+        ctaUrl: newsUrl || exam?.official_url || `${APP_BASE_URL}/discovery/exams`,
         secondaryCtaText: 'Open Exam Calendar',
-        secondaryCtaUrl: 'http://localhost:5000/discovery/calendar',
+        secondaryCtaUrl: `${APP_BASE_URL}/discovery/calendar`,
         language: 'en'
       })
     };

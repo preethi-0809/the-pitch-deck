@@ -39,29 +39,27 @@ Render hosts your entire project on one URL (e.g. `https://the-pitch-deck.onrend
 
 ---
 
-## Option 2: Deploy on Vercel (Serverless Monorepo)
+## Connected Live Architecture: Vercel (Frontend) + Render (Backend)
 
-Vercel serves your React frontend at the edge and routes `/api/*` requests to serverless Express functions on one single link (e.g. `https://the-pitch-deck.vercel.app`).
+- **Frontend URL**: `https://the-pitch-deck.vercel.app`
+- **Backend API URL**: `https://the-pitch-deck.onrender.com`
+- **Database**: Turso Cloud libSQL (`pitchdeck-preethi-0809.aws-ap-south-1.turso.io`)
 
-### Steps:
-1. Push your code to GitHub.
-2. Go to [Vercel Dashboard](https://vercel.com/dashboard) and click **Add New...** -> **Project**.
-3. Import your GitHub repository.
-4. Settings:
-   - **Framework Preset**: `Vite` (or `Other`)
-   - **Root Directory**: `./` (leave default root)
-   - **Build Command**: `npm run build`
-   - **Output Directory**: `frontend/dist`
-5. Add the Environment Variables in Vercel:
-   - `TURSO_DATABASE_URL`
-   - `TURSO_AUTH_TOKEN`
-   - `JWT_SECRET`
-   - `AI_PROVIDER`
-   - `EMAIL_USER`
-   - `EMAIL_PASS`
-   - etc.
-6. Click **Deploy**.
-7. Your app is live at `https://<your-project>.vercel.app`.
+### How Frontend and Backend Are Connected:
+1. **Dual-Path Resilient Routing**:
+   - **Vercel Reverse Proxy (`vercel.json`)**: All requests to `https://the-pitch-deck.vercel.app/api/*` are edge reverse-proxied directly to `https://the-pitch-deck.onrender.com/api/$1`.
+   - **Smart Client Fallback (`frontend/src/services/api.js`)**: If direct requests are made, the frontend client automatically resolves to `https://the-pitch-deck.onrender.com/api` when running on any production domain.
+2. **CORS Configuration**: Render backend explicitly allows `https://the-pitch-deck.vercel.app`, handles `OPTIONS` preflight requests, and allows credentials and auth headers (`Authorization`, `Content-Type`).
+3. **Database & Modules**: All modules (Discovery, Aspirant OS, Mock Tests, AI Coach, Notifications, Syllabi) interact with the live Render backend, which executes queries against the Turso cloud database.
+
+### Redeploying Updates:
+Simply push your changes to GitHub:
+```bash
+git add .
+git commit -m "Connect frontend and backend modules"
+git push origin main
+```
+Both Vercel and Render will automatically pick up the new commit and rebuild!
 
 ---
 

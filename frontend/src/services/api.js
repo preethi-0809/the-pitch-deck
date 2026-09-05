@@ -1,10 +1,14 @@
 const getApiBase = () => {
   const envUrl = import.meta.env.VITE_API_URL;
-  if (!envUrl || envUrl.trim() === '') {
-    return '/api';
+  if (envUrl && envUrl.trim() !== '') {
+    const clean = envUrl.trim().replace(/\/+$/, '');
+    return clean.endsWith('/api') ? clean : `${clean}/api`;
   }
-  const clean = envUrl.trim().replace(/\/+$/, '');
-  return clean.endsWith('/api') ? clean : `${clean}/api`;
+  // When running in browser on Vercel or any non-localhost production environment, default to the live Render backend
+  if (typeof window !== 'undefined' && window.location.hostname && !window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1')) {
+    return 'https://the-pitch-deck.onrender.com/api';
+  }
+  return '/api';
 };
 
 export const API_BASE = getApiBase();
