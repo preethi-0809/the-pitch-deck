@@ -1,14 +1,9 @@
+export const API_URL = import.meta.env.VITE_API_URL || 'https://the-pitch-deck.onrender.com';
+
 const getApiBase = () => {
-  const envUrl = import.meta.env.VITE_API_URL;
-  if (envUrl && envUrl.trim() !== '') {
-    const clean = envUrl.trim().replace(/\/+$/, '');
-    return clean.endsWith('/api') ? clean : `${clean}/api`;
-  }
-  // When running in browser on Vercel or any non-localhost production environment, default to the live Render backend
-  if (typeof window !== 'undefined' && window.location.hostname && !window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1')) {
-    return 'https://the-pitch-deck.onrender.com/api';
-  }
-  return '/api';
+  const raw = (API_URL || '').trim().replace(/\/+$/, '');
+  if (!raw) return 'https://the-pitch-deck.onrender.com/api';
+  return raw.endsWith('/api') ? raw : `${raw}/api`;
 };
 
 export const API_BASE = getApiBase();
@@ -43,14 +38,18 @@ async function request(endpoint, options = {}) {
     throw error;
   }
 
-  let data;
-  const contentType = response.headers.get('content-type') || '';
-  if (contentType.includes('application/json')) {
-    data = await response.json().catch(() => null);
+  let data = null;
+  let rawText = '';
+  try {
+    rawText = await response.text();
+    if (rawText && rawText.trim() !== '') {
+      data = JSON.parse(rawText);
+    }
+  } catch {
+    data = null;
   }
 
   if (!data) {
-    const rawText = await response.text().catch(() => '');
     if (response.status === 404) {
       data = { success: false, message: 'Backend endpoint not found (HTTP 404). Please ensure the backend is deployed and reachable.' };
     } else if (response.status >= 500) {
