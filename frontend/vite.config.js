@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
-  const backendTarget = env.VITE_API_URL || 'http://localhost:5000';
+  const backendTarget = process.env.BACKEND_PROXY_URL || env.VITE_DEV_BACKEND_URL || 'http://localhost:5000';
 
   return {
     plugins: [react()],
@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => {
       port: 5173,
       proxy: {
         '/api': {
-          target: backendTarget.startsWith('http') ? backendTarget : 'http://localhost:5000',
+          target: backendTarget,
           changeOrigin: true,
           secure: false,
         }

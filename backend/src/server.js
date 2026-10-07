@@ -11,6 +11,7 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 const { initializeDatabase } = require('./config/initDb');
 const { runSeed } = require('../../database/seed/seedRunner');
 const apiRoutes = require('./routes');
+const authRoutes = require('./routes/authRoutes');
 const errorMiddleware = require('./middleware/errorMiddleware');
 
 const app = express();
@@ -24,21 +25,35 @@ try {
   console.error('Database startup warning:', err.message);
 }
 
-// Middleware
+// CORS: Allow deployed frontend, localhost dev, and any custom CLIENT_URL
 const allowedOrigins = [
   'https://the-pitch-deck.vercel.app',
-  'https://the-pitch-deck.onrender.com',
-  process.env.CLIENT_URL
-].filter(Boolean);
+  'http://localhost:5173',
+  'http://localhost:5000',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:5000'
+];
+
+// Allow additional origins from environment (e.g. custom domain or preview deployments)
+if (process.env.CLIENT_URL) {
+  const clientUrl = process.env.CLIENT_URL.trim().replace(/\/+$/, '');
+  if (!allowedOrigins.includes(clientUrl)) {
+    allowedOrigins.push(clientUrl);
+  }
+}
 
 const corsOptions = {
-  origin: (origin, callback) => {
-    // Allow all cross-origin requests from deployed frontend and dev origins
-    callback(null, true);
+  origin: function (origin, callback) {
+    // Allow requests with no origin (server-to-server, curl, mobile apps)
+    if (!origin) return callback(null, true);
+    // Allow any Vercel preview deployment
+    if (origin.endsWith('.vercel.app') || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    callback(null, false);
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
 };
 
 app.use(cors(corsOptions));
@@ -46,13 +61,23 @@ app.options('*', cors(corsOptions));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Request logger for development
-if (process.env.NODE_ENV !== 'production') {
-  app.use((req, res, next) => {
-    console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
-    next();
+// Request logger
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
+  next();
+});
+
+// Health check endpoint
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Backend is working"
   });
-}
+});
+
+// Mount Auth Routes directly
+app.use('/api/auth', authRoutes);
+app.use('/auth', authRoutes);
 
 // Mount API
 app.use('/api', apiRoutes);
